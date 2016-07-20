@@ -25,7 +25,9 @@ from pycbc.types import TimeSeries, FrequencySeries, zeros, float32, complex64
 import pycbc.fft.fftw, pycbc.version
 import pycbc.opt
 import pycbc.weave
+import time
 
+tstart = time.time()
 parser = argparse.ArgumentParser(usage='',
     description="Find single detector gravitational-wave triggers.")
 
@@ -144,6 +146,8 @@ parser.add_argument("--keep-loudest-num", type=int,
                     help="Number of triggers to keep from each maximization interval")
 parser.add_argument("--gpu-callback-method", default='none')
 
+
+
 # Add options groups
 psd.insert_psd_option_group(parser)
 strain.insert_strain_option_group(parser)
@@ -202,6 +206,8 @@ with ctx:
         'bank_chisq_dof' : None,
         'cont_chisq'     : None
                }
+
+
     names = sorted(out_vals.keys())
 
     if len(strain_segments.segment_slices) == 0:
@@ -226,6 +232,12 @@ with ctx:
         use_cluster = False
     else:
         use_cluster = True
+
+    if hasattr(ctx, "num_threads"):
+            ncores = ctx.num_threads
+    else:
+            ncores = 1
+
 
     matched_filter = MatchedFilterControl(opt.low_frequency_cutoff, None,
                                    opt.snr_threshold, tlen, delta_f, complex64,
@@ -259,6 +271,8 @@ with ctx:
                     flow, dtype=complex64, phase_order=opt.order,
                     taper=opt.taper_template, approximant=opt.approximant,
                     out=template_mem, max_template_length=opt.max_template_length)
+
+    ntemplates = len(bank)
 
     # Note: in the class-based approach used now, 'template' is not explicitly used
     # within the loop.  Rather, the iteration simply fills the memory specifed in
@@ -337,6 +351,10 @@ if opt.maximization_interval:
     window = int(opt.maximization_interval * gwstrain.sample_rate / 1000)
     event_mgr.maximize_over_bank("time_index", "snr", window)
     logging.info("%d remaining triggers" % len(event_mgr.events))
+
+tstop = time.time()
+run_time = tstop - tstart
+event_mgr.save_performance(run_time=run_time, ncores=ncores, ntemplates=ntemplates)
 
 logging.info("Writing out triggers")
 event_mgr.write_events(opt.output)
