@@ -73,7 +73,6 @@ for filename in args.trigger_files:
     ifo_data = data[ifo]
     s, e = ifo_data['search/start_time'][:], ifo_data['search/end_time'][:]
     start, end = numpy.append(start, s), numpy.append(end, e)
-    search_keys = numpy.append(search_keys, h)
 
     if 'templates_per_core' in ifo_data['search'].keys():
         tpc = numpy.append(tpc, ifo_data['search/templates_per_core'][:])
