@@ -120,7 +120,7 @@ def make_gating_plot(workflow, insp_files, out_dir, tags=None):
 
 def make_throughput_plot(workflow, insp_files, out_dir, tags=[]):
     makedir(out_dir)
-    node = PlotExecutable(workflow.cp, 'plot_throughput', ifos=workflow.infos,
+    node = PlotExecutable(workflow.cp, 'plot_throughput', ifos=workflow.ifos,
                           out_dir=outdir, tags=tags).create_node()
     node.add_input_list_opt('--input-file', insp_files)
     node.new_output_file_opt(workflow.analysis_time, '.png', '--output-file')
