@@ -37,11 +37,11 @@ def chisq_accum_bin(chisq, q):
 
 @schemed(BACKEND_PREFIX)
 def shift_sum_max(v1, shifts, bins): #changed name
-    """ Calculate the time shifted sum of the FrequencySeries
+    """ Calculate the maximum value bin
     """
     pass
 
-def power_glitchchisq_at_points_from_precomputed(corr, snr, snr_norm, bins, indices):
+def glitchchisq_at_points_from_precomputed(corr, snr, snr_norm, bins, indices):
     """Calculate the chisq timeseries from precomputed values for only select points.
 
     This function calculates the chisq at each point by explicitly time shifting
@@ -63,13 +63,13 @@ def power_glitchchisq_at_points_from_precomputed(corr, snr, snr_norm, bins, indi
 
     Returns
     -------
-    chisq: Array
-        An array containing only the chisq at the selected points.
+    glitchchisq: Array
+        An array containing only the glitchchisq at the selected points.
     """
-    logging.info('doing fast point chisq')
+    logging.info('doing fast point glitchchisq')
     num_bins = len(bins) - 1
-    chisq = shift_sum(corr, indices, bins)
-    return (chisq * num_bins - (snr.conj() * snr).real) * (snr_norm ** 2.0)
+    glitchchisq = shift_sum(corr, indices, bins)
+    return (glitchchisq * num_bins - (snr.conj() * snr).real) * (snr_norm ** 2.0)
 
 _q_l = None
 _qtilde_l = None
@@ -77,7 +77,7 @@ _chisq_l = None
 
 class SingleDetPowerGlitchChisq(object): #changed name
     """Class that handles precomputation and memory management for efficiently
-    running the power chisq in a single detector inspiral analysis.
+    running the glitchchisq in a single detector inspiral analysis.
     """
     def __init__(self, num_bins=0, snr_threshold=None):
         if not (num_bins == "0" or num_bins == 0):
@@ -125,13 +125,13 @@ class SingleDetPowerGlitchChisq(object): #changed name
         glitchchisq: Array
             Chisq values, one for each sample index
 
-        chisq_dof: Array
+        glitchchisq_dof: Array
             Number of statistical degrees of freedom for the chisq test
             in the given template
         """
 
         if self.do:
-            logging.info("...Doing power glitchchisq")
+            logging.info("...Doing glitchchisq")
 
             num_above = len(indices)
             if self.snr_threshold:
@@ -149,7 +149,7 @@ class SingleDetPowerGlitchChisq(object): #changed name
             if num_above > 0:
                 bins = self.cached_chisq_bins(template, psd)
                 dof = (len(bins) - 1) * 2 - 2
-                glitchchisq = power_glitchchisq_at_points_from_precomputed(corr,
+                glitchchisq = glitchchisq_at_points_from_precomputed(corr,
                                      above_snrv, snr_norm, bins, above_indices)
 
             if self.snr_threshold:
