@@ -33,28 +33,8 @@ else:
     omp_libs = []
     omp_flags = []
 
-def chisq_accum_bin_numpy(chisq, q):
-    chisq += q.squared_norm()
-    
-def chisq_accum_bin_inline(chisq, q):
-    
-    chisq = numpy.array(chisq.data, copy=False)
-    q = numpy.array(q.data, copy=False)
-    N = len(chisq)
-    code = """
-        #pragma omp parallel for
-        for (int i=0; i<N; i++){
-            chisq[i] += q[i].real()*q[i].real()+q[i].imag()*q[i].imag();
-        }
-    """
-    inline(code, ['chisq', 'q', 'N'], 
-                    extra_compile_args=[WEAVE_FLAGS] + omp_flags,
-                    libraries=omp_libs
-          )
-          
-chisq_accum_bin = chisq_accum_bin_inline
 
-point_chisq_code = """
+glitchchisq_code = """ 
     int num_parallel_regions = 16;
     
     for (unsigned int r=0; r<blen; r++){     
@@ -137,17 +117,20 @@ point_chisq_code = """
         }    
         
         for (unsigned int i=0; i<n; i++){
-            chisq[i] += outr[i]*outr[i] + outi[i]*outi[i];
+            TYPE zj = outr[i]*outr[i] + outi[i]*outi[i];
+            if (zj > glitchchisq[i]){
+                glitchchisq[i]=zj
+            }
         }
         free(outr);
         free(outi);
     }    
 """
 
-point_chisq_code_single = point_chisq_code.replace('TYPE', 'float')
-point_chisq_code_double = point_chisq_code.replace('TYPE', 'double')
+glitchchisq_code_single = glitchchisq_code.replace('TYPE', 'float')
+glitchchisq_code_double = glitchchisq_code.replace('TYPE', 'double')
 
-def shift_sum(v1, shifts, bins):
+def shift_sum_max(v1, shifts, bins):
     real_type = real_same_precision_as(v1)
     shifts = numpy.array(shifts, dtype=real_type)
     
@@ -157,18 +140,18 @@ def shift_sum(v1, shifts, bins):
     slen = len(v1)
 
     if v1.dtype.name == 'complex64':
-        code = point_chisq_code_single
+        code = glitchchisq_code_single
     else:
-        code = point_chisq_code_double
+        code = glitchchisq_code_double
     
     n = int(len(shifts))
     
     # Create some output memory
-    chisq =  numpy.zeros(n, dtype=real_type)
+    glitchchisq =  numpy.zeros(n, dtype=real_type)
     
-    inline(code, ['v1', 'n', 'chisq', 'slen', 'shifts', 'bins', 'blen'],
+    inline(code, ['v1', 'n', 'glitchchisq', 'slen', 'shifts', 'bins', 'blen'],
                     extra_compile_args=[WEAVE_FLAGS] + omp_flags,
                     libraries=omp_libs
           )
           
-    return  chisq
+    return glitchchisq
