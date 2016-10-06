@@ -114,18 +114,15 @@ debug_glitchchisq_code = """
             free(vsr);
             free(vsi);
             
-        }    
-        
+        }
+
+        // n is the number of triggers above threshhold
         for (unsigned int i=0; i<n; i++){
-            TYPE zj = outr[i]*outr[i] + outi[i]*outi[i];
-            if (zj > debugglitchchisq[i]){
-                debugglitchchisq[i]=zj
-            }
-	    debugarray = np.array(blen * len(debugglitchchisq))
+            outarray[i] = outr[i]*outr[i] + outi[i]*outi[i];
         }
         free(outr);
         free(outi);
-    }    
+    } // End loop over number of chi-square bins    
 """
 
 glitchchisq_code_single = glitchchisq_code.replace('TYPE', 'float')
@@ -149,10 +146,10 @@ def debug_shift_sum_max(v1, shifts, bins):
     
     # Create some output memory
     debugglitchchisq =  numpy.zeros(n, dtype=real_type)
-    debugarray = numpy.zeros(len(bins)*blen, dtype=numpy.complex64)
-    inline(code, ['v1', 'n', 'glitchchisq', 'slen', 'shifts', 'bins', 'blen', 'debugarray'],
+    outarray = numpy.zeros(len(bins)*blen, dtype=numpy.complex64)
+    inline(code, ['v1', 'n', 'glitchchisq', 'slen', 'shifts', 'bins', 'blen', 'outarray'],
                     extra_compile_args=[WEAVE_FLAGS] + omp_flags,
                     libraries=omp_libs
           )
-    numpy.reshape(debugarray, (blen,len(debugglitchchisq)))
+    numpy.reshape(outarray, (blen,len(debugglitchchisq)))
     return debugglitchchisq

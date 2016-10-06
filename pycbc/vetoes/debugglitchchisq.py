@@ -68,8 +68,8 @@ def debug_glitchchisq_at_points_from_precomputed(corr, snr, snr_norm, bins, indi
     """
     logging.info('doing fast point glitchchisq')
     num_bins = len(bins) - 1
-    glitchchisq = shift_sum(corr, indices, bins)
-    return (glitchchisq * num_bins - (snr.conj() * snr).real) * (snr_norm ** 2.0)
+    glitchchisq = debug_shift_sum_max(corr, indices, bins)
+    return (glitchchisq * snr_norm )
 
 _q_l = None
 _qtilde_l = None
@@ -149,14 +149,14 @@ class DebugSingleDetPowerGlitchChisq(object): #changed name
             if num_above > 0:
                 bins = self.cached_chisq_bins(template, psd)
                 dof = (len(bins) - 1) * 2 - 2
-                glitchchisq = glitchchisq_at_points_from_precomputed(corr,
+                debug_glitchchisq = debug_glitchchisq_at_points_from_precomputed(corr,
                                      above_snrv, snr_norm, bins, above_indices)
 
             if self.snr_threshold:
                 if num_above > 0:
-                    rchisq[above] = glitchchisq
+                    rchisq[above] = debug_glitchchisq
             else:
-                rchisq = glitchchisq
+                rchisq = debug_glitchchisq
 
             return rchisq, numpy.repeat(dof, len(indices))# dof * numpy.ones_like(indices)
         else:
