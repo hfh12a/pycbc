@@ -125,8 +125,8 @@ debug_glitchchisq_code = """
     } // End loop over number of chi-square bins    
 """
 
-glitchchisq_code_single = glitchchisq_code.replace('TYPE', 'float')
-glitchchisq_code_double = glitchchisq_code.replace('TYPE', 'double')
+debugglitchchisq_code_single = debug_glitchchisq_code.replace('TYPE', 'float')
+debugglitchchisq_code_double = debug_glitchchisq_code.replace('TYPE', 'double')
 
 def debug_shift_sum_max(v1, shifts, bins):
     real_type = real_same_precision_as(v1)
@@ -138,16 +138,16 @@ def debug_shift_sum_max(v1, shifts, bins):
     slen = len(v1)
 
     if v1.dtype.name == 'complex64':
-        code = glitchchisq_code_single
+        code = debugglitchchisq_code_single
     else:
-        code = glitchchisq_code_double
+        code = debugglitchchisq_code_double
     
     n = int(len(shifts))
     
     # Create some output memory
     debugglitchchisq =  numpy.zeros(n, dtype=real_type)
     outarray = numpy.zeros(len(bins)*blen, dtype=numpy.complex64)
-    inline(code, ['v1', 'n', 'glitchchisq', 'slen', 'shifts', 'bins', 'blen', 'outarray'],
+    inline(code, ['v1', 'n', 'debugglitchchisq', 'slen', 'shifts', 'bins', 'blen', 'outarray'],
                     extra_compile_args=[WEAVE_FLAGS] + omp_flags,
                     libraries=omp_libs
           )

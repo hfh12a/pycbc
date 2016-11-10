@@ -29,7 +29,7 @@ from pycbc.scheme import schemed
 from pycbc.vetoes.chisq import power_chisq_bins_from_sigmasq_series, power_chisq_bins
 import pycbc.pnutils
 
-BACKEND_PREFIX="pycbc.vetoes.glitchchisq_"
+BACKEND_PREFIX="pycbc.vetoes.debugglitchchisq_"
 
 @schemed(BACKEND_PREFIX)
 def debug_chisq_accum_bin(chisq, q):
@@ -147,7 +147,7 @@ class DebugSingleDetPowerGlitchChisq(object): #changed name
                 above_snrv = snrv
 
             if num_above > 0:
-                bins = self.cached_chisq_bins(template, psd)
+                bins = self.debug_cached_chisq_bins(template, psd)
                 dof = (len(bins) - 1) * 2 - 2
                 debug_glitchchisq = debug_glitchchisq_at_points_from_precomputed(corr,
                                      above_snrv, snr_norm, bins, above_indices)
