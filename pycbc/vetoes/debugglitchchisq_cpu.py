@@ -33,7 +33,7 @@ else:
     omp_libs = []
     omp_flags = []
 
-support_code = """
+complex_code = """
 #include <complex.h>
 """
     
