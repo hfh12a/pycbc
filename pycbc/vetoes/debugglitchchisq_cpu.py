@@ -34,13 +34,13 @@ else:
     omp_flags = []
 
 complex_code = """
-#include <complex.h>
+#include <complex>
 """
     
 debug_glitchchisq_code = """ 
     std::complex<float> I(0.0, 1.0);
     int num_parallel_regions = 16;
-    
+
     for (unsigned int r=0; r<nbins; r++){     
         int bstart = bins[r];
         int bend = bins[r+1];
@@ -65,7 +65,6 @@ debug_glitchchisq_code = """
             TYPE* vsi = (TYPE*) malloc(sizeof(TYPE)*n);
             TYPE* outr_tmp = (TYPE*) malloc(sizeof(TYPE)*n);
             TYPE* outi_tmp = (TYPE*) malloc(sizeof(TYPE)*n);
-
             
             for (int i=0; i<n; i++){
                 pr[i] = cos(2 * 3.141592653 * shifts[i] * (start) / slen);
@@ -75,7 +74,7 @@ debug_glitchchisq_code = """
                 outr_tmp[i] = 0;
                 outi_tmp[i] = 0;
             }
-            
+
             TYPE t1, t2, k1, k2, k3, vs, va; 
             
             for (unsigned int j=start; j<end; j++){
@@ -122,7 +121,7 @@ debug_glitchchisq_code = """
 
         // n is the number of triggers above threshhold
         for (unsigned int i=0; i<n; i++){
-	    outarray[r*nbins + i] = outr[i] + (outi[i]* I);
+	    outarray[r*nbins + i] = outr[i] + (outi[i]* I);   
         }
         free(outr);
         free(outi);
@@ -145,15 +144,15 @@ def debug_shift_sum_max(v1, shifts, bins):
         code = debugglitchchisq_code_single
     else:
         code = debugglitchchisq_code_double
-    
+    # For debugging
+    print "bins = {0}".format(bins)
     n = int(len(shifts))
+
+    outarray = numpy.zeros(len(bins)*n, dtype=numpy.complex64)
     
-    # Create some output memory
-    debugglitchchisq =  numpy.zeros(n, dtype=real_type)
-    outarray = numpy.zeros(len(bins)*nbins, dtype=numpy.complex64)
-    inline(code, ['v1', 'n', 'debugglitchchisq', 'slen', 'shifts', 'bins', 'nbins', 'outarray'],
+    inline(code, ['v1', 'n', 'slen', 'shifts', 'bins', 'nbins', 'outarray'],
                     extra_compile_args=[WEAVE_FLAGS] + omp_flags,
                     libraries=omp_libs,
 		    support_code = complex_code)
-    numpy.reshape(outarray, (nbins,len(debugglitchchisq)))
-    return debugglitchchisq
+    numpy.reshape(outarray, (len(bins),n))
+    return outarray

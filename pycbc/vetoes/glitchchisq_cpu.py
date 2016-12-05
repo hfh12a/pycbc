@@ -119,7 +119,7 @@ glitchchisq_code = """
         for (unsigned int i=0; i<n; i++){
             TYPE zj = outr[i]*outr[i] + outi[i]*outi[i];
             if (zj > glitchchisq[i]){
-                glitchchisq[i]=zj
+                glitchchisq[i]=zj;
             }
         }
         free(outr);
