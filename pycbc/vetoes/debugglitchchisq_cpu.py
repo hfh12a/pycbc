@@ -121,17 +121,6 @@ debug_glitchchisq_code = """
         // n is the number of triggers above threshhold
         for (unsigned int i=0; i<n; i++){
 	    outarray[r*n + i] = outr[i] + (outi[i]* I);   
-            printf("n: %d", n);
-            printf("\\n");
-            printf("r: %d", r);
-            printf("\\n");
-            printf("nbins: %d", nbins);
-            printf("\\n");
-            printf("index: %d", r*nbins + i);
-            printf("\\n");
-            printf("outarray[index]: %d", outarray[r*nbins+i]);
-            printf("\\n");
-
         }
         free(outr);
         free(outi);
@@ -154,8 +143,7 @@ def debug_shift_sum_max(v1, shifts, bins):
         code = debugglitchchisq_code_single
     else:
         code = debugglitchchisq_code_double
-    # For debugging
-#    print "bins = {0}".format(bins)
+
     n = int(len(shifts))
 
     outarray = numpy.zeros(nbins*n, dtype=numpy.complex64)
@@ -164,5 +152,5 @@ def debug_shift_sum_max(v1, shifts, bins):
                     extra_compile_args=[WEAVE_FLAGS] + omp_flags,
                     libraries=omp_libs,
 		    support_code = complex_code)
-    numpy.reshape(outarray, (nbins,n))
+    outarray = numpy.reshape(outarray, (nbins,n))
     return outarray
