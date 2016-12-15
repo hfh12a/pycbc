@@ -68,7 +68,7 @@ def glitchchisq_at_points_from_precomputed(corr, snr, snr_norm, bins, indices):
     """
     logging.info('doing fast point glitchchisq')
     num_bins = len(bins) - 1
-    glitchchisq = shift_sum(corr, indices, bins)
+    glitchchisq = shift_sum_max(corr, indices, bins)
     return (glitchchisq * num_bins - (snr.conj() * snr).real) * (snr_norm ** 2.0)
 
 _q_l = None
