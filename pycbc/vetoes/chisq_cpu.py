@@ -170,5 +170,5 @@ def shift_sum(v1, shifts, bins):
                     extra_compile_args=[WEAVE_FLAGS] + omp_flags,
                     libraries=omp_libs
           )
-          
+
     return  chisq

@@ -24,7 +24,7 @@
 import numpy, logging, math, pycbc.fft
 
 from pycbc.types import zeros, real_same_precision_as, TimeSeries, complex_same_precision_as
-from pycbc.filter import sigmasq_series, make_frequency_series, matched_filter_core, get_cutoff_indices
+from pycbc.filter import sigmasq_series, make_frequency_series, matched_filter_core, get_cutoff_indices, sigmasq
 from pycbc.scheme import schemed
 from pycbc.vetoes.chisq import power_chisq_bins_from_sigmasq_series, power_chisq_bins
 import pycbc.pnutils
@@ -69,7 +69,12 @@ def glitchchisq_at_points_from_precomputed(corr, snr, snr_norm, bins, indices):
     logging.info('doing fast point glitchchisq')
     num_bins = len(bins) - 1
     glitchchisq = shift_sum_max(corr, indices, bins)
-    return (glitchchisq * num_bins - (snr.conj() * snr).real) * (snr_norm ** 2.0)
+
+    return (((snr.conj() * snr).real * num_bins) - (glitchchisq / (4 * corr.delta_f))) * (snr_norm ** 2.0)
+    #return (glitchchisq * num_bins - (snr.conj() * snr).real) * (snr_norm ** 2.0)
+#    return  ((((snr.conj() * snr).real) ** 2.0) - glitchchisq) * (snr_norm ** 2.0) * (4 * corr.delta_f)
+
+
 
 _q_l = None
 _qtilde_l = None
@@ -158,6 +163,13 @@ class SingleDetPowerGlitchChisq(object): #changed name
             else:
                 rchisq = glitchchisq
 
+            diff=numpy.zeros(len(bins)-1)
+            for di in range(0,len(bins)-1):
+                diff[di] = bins[di+1] - bins[di]
+
+            #print "Bin Spacing: ", diff
+                                
+                
             return rchisq, numpy.repeat(dof, len(indices))# dof * numpy.ones_like(indices)
         else:
             return None, None

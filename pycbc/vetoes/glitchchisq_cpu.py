@@ -124,6 +124,7 @@ glitchchisq_code = """
         }
         free(outr);
         free(outi);
+
     }    
 """
 
@@ -153,5 +154,6 @@ def shift_sum_max(v1, shifts, bins):
                     extra_compile_args=[WEAVE_FLAGS] + omp_flags,
                     libraries=omp_libs
           )
-          
+
+    glitchchisq = glitchchisq
     return glitchchisq
