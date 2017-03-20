@@ -70,7 +70,7 @@ def glitchchisq_at_points_from_precomputed(corr, snr, snr_norm, bins, indices):
     num_bins = len(bins) - 1
     glitchchisq = shift_sum_max(corr, indices, bins)
 
-    return (((snr.conj() * snr).real * num_bins) - (glitchchisq / (4 * corr.delta_f))) * (snr_norm ** 2.0)
+    return (((snr.conj() * snr).real) - (glitchchisq / (4 * corr.delta_f))) * (snr_norm ** 2.0)
     #return (glitchchisq * num_bins - (snr.conj() * snr).real) * (snr_norm ** 2.0)
 #    return  ((((snr.conj() * snr).real) ** 2.0) - glitchchisq) * (snr_norm ** 2.0) * (4 * corr.delta_f)
 
