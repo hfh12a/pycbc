@@ -153,4 +153,5 @@ def debug_shift_sum_max(v1, shifts, bins):
                     libraries=omp_libs,
 		    support_code = complex_code)
     outarray = numpy.reshape(outarray, (nbins,n))
+    outarray = outarray.transpose()
     return outarray

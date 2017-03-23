@@ -63,13 +63,13 @@ def debug_glitchchisq_at_points_from_precomputed(corr, snr, snr_norm, bins, indi
 
     Returns
     -------
-    glitchchisq: Array
+    debugglitchchisq: Array
         An array containing only the glitchchisq at the selected points.
     """
     logging.info('doing fast point glitchchisq')
     num_bins = len(bins) - 1
-    glitchchisq = debug_shift_sum_max(corr, indices, bins)
-    return (glitchchisq * snr_norm )
+    debug_glitchchisq = debug_shift_sum_max(corr, indices, bins)
+    return (debug_glitchchisq * snr_norm )
 
 _q_l = None
 _qtilde_l = None
@@ -102,7 +102,7 @@ class DebugSingleDetPowerGlitchChisq(object): #changed name
         key = (id(template.params), id(psd))
         if key not in self._bin_cache or not hasattr(psd, '_chisq_cached_key'):
             psd._chisq_cached_key = True
-            num_bins = int(self.parse_option(template, self.num_bins))
+            num_bins = int(self.debug_parse_option(template, self.num_bins))
 
             if hasattr(psd, 'sigmasq_vec') and template.approximant in psd.sigmasq_vec:
                 logging.info("...Calculating fast power chisq bins")
@@ -158,6 +158,13 @@ class DebugSingleDetPowerGlitchChisq(object): #changed name
             else:
                 rchisq = debug_glitchchisq
 
+
+            diff=numpy.zeros(len(bins)-1)
+            for di in range(0,len(bins)-1):
+                diff[di] = bins[di+1] - bins[di]
+
+#            print "Bin Spacing: ", diff
+            
             return rchisq, numpy.repeat(dof, len(indices))# dof * numpy.ones_like(indices)
         else:
             return None, None
