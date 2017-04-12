@@ -226,8 +226,24 @@ with ctx:
         'glitch_chisq'   : float32,
         'glitch_dof'     : int
                 }
+<<<<<<< HEAD
     out_types.update(SingleDetSGChisq.returns)
     out_vals = {key: None for key in out_types}
+=======
+    out_vals = {
+        'time_index'     : None,
+        'snr'            : None,
+        'chisq'          : None,
+        'chisq_dof'      : None,
+        'bank_chisq'     : None,
+        'bank_chisq_dof' : None,
+        'cont_chisq'     : None,
+        'glitch_chisq'   : None,
+        'glitch_dof'     : None
+               }
+
+
+>>>>>>> e54f1cf90b441fdf191856cc25592130a27090b2
     names = sorted(out_vals.keys())
 
     if len(strain_segments.segment_slices) == 0:
