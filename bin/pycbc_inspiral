@@ -223,6 +223,8 @@ with ctx:
         'bank_chisq'     : float32,
         'bank_chisq_dof' : int,
         'cont_chisq'     : float32,
+        'glitch_chisq'   : float32,
+        'glitch_dof'     : int
                 }
     out_types.update(SingleDetSGChisq.returns)
     out_vals = {key: None for key in out_types}
@@ -368,6 +370,8 @@ with ctx:
                                    stilde.psd, norm, stilde=stilde,
                                    low_frequency_cutoff=flow)
 
+            out_vals['glitch_chisq'] = \
+                    
             idx += stilde.cumulative_index
 
             out_vals['time_index'] = idx
