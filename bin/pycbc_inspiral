@@ -195,7 +195,9 @@ with ctx:
         'chisq_dof'      : int,
         'bank_chisq'     : float32,
         'bank_chisq_dof' : int,
-        'cont_chisq'     : float32
+        'cont_chisq'     : float32,
+        'glitch_chisq'   : float32,
+        'glitch_dof'     : int
                 }
     out_vals = {
         'time_index'     : None,
@@ -204,7 +206,9 @@ with ctx:
         'chisq_dof'      : None,
         'bank_chisq'     : None,
         'bank_chisq_dof' : None,
-        'cont_chisq'     : None
+        'cont_chisq'     : None,
+        'glitch_chisq'   : None,
+        'glitch_dof'     : None
                }
 
 
@@ -316,6 +320,8 @@ with ctx:
                                    stilde.psd, norm, stilde=stilde,
                                    low_frequency_cutoff=flow)
 
+            out_vals['glitch_chisq'] = \
+                    
             idx += stilde.cumulative_index
 
             out_vals['time_index'] = idx
